@@ -1,0 +1,10 @@
+przechowywane dane:
+
+- cel 			-- tekst
+
+- kwota docelowa	-- liczba
+
+- kwota aktualna	-- liczba
+
+- data rozpoczecia	-- tekst? data
+

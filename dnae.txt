@@ -1,0 +1,18 @@
+Co potrzebuje od uzytkowika ?
+
+- ile jest w stanie odlozyc tygodniowo/miesiecznie
+
+- cel odkladania
+
+
+
+co bedzie robic aplikacja ?
+
+- codzienny reminder o celu 
+
+- codzienny reminder o szacowanym czasie w ktorym mozna zrealiozowac ten cel
+
+- reminder okresowy o odkladaniu
+
+- okresowe przypomnienie o progresie
+
