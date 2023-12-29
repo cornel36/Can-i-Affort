@@ -36,7 +36,7 @@ void dodajCel()
 
 void wyswietlCele()
 {
-    if (celeOszczednosciowe.size() == 0)
+    if (celeOszczednosciowe.empty())
     {
         cout << endl
              << "Brak celów." << endl;
@@ -79,6 +79,38 @@ void usunCel()
     }
 }
 
+void aktualizujCel()
+{
+
+    if (celeOszczednosciowe.empty())
+    {
+        cout << "Brak celów do aktualizacji." << endl;
+        return;
+    }
+
+    int numerCelu;
+    double nowaKwota;
+
+    wyswietlCele();
+
+    cout << "Który cel chcesz zaktualizować?: " << endl;
+    cin >> numerCelu;
+
+    if (numerCelu >= 1 <= celeOszczednosciowe.size())
+    {
+
+        cout << "Podaj nową kwotę: ";
+        cin >> nowaKwota;
+
+        celeOszczednosciowe[numerCelu - 1].aktualnaKwota = nowaKwota;
+    }
+    else
+    {
+        cout << "Nieprawidłowy numer celu." << endl;
+        return;
+    }
+}
+
 int main()
 {
     int wybor;
@@ -86,9 +118,10 @@ int main()
     do
     {
         cout << "Menu: " << endl;
-        cout << "1. Dodaj cel oszczędnościowy" << endl;
-        cout << "2. Wyświetl listę celów oszczędnościowych" << endl;
-        cout << "3. Usuń cel oszczędnościowy" << endl;
+        cout << "1. Dodaj cel oszczędnościowy." << endl;
+        cout << "2. Wyświetl listę celów oszczędnościowych." << endl;
+        cout << "3. Usuń cel oszczędnościowy." << endl;
+        cout << "4. Zaktualizuj cel." << endl;
         cout << "0. Wyjście" << endl;
 
         cout << "Wybierz opcję:" << endl;
@@ -104,6 +137,9 @@ int main()
             break;
         case 3:
             usunCel();
+            break;
+        case 4:
+            aktualizujCel();
             break;
         case 0:
             cout << "Do zobaczenia!" << endl;
