@@ -10,8 +10,9 @@ public:
     string nazwa;
     double kwotaDocelowa;
     double aktualnaKwota;
+    bool zrealizowany;
 
-    CelOszczednosciowy(int numer, const string &n, double kwota) : numerCelu(numer), nazwa(n), kwotaDocelowa(kwota), aktualnaKwota(0.0) {}
+    CelOszczednosciowy(int numer, const string &n, double kwota) : numerCelu(numer), nazwa(n), kwotaDocelowa(kwota), aktualnaKwota(0.0), zrealizowany(false) {}
 };
 
 vector<CelOszczednosciowy> celeOszczednosciowe;
@@ -36,19 +37,12 @@ void dodajCel()
 
 void wyswietlCele()
 {
-    if (celeOszczednosciowe.empty())
-    {
-        cout << endl
-             << "Brak celów." << endl;
-    }
-    else
-    {
-        cout << "Twoje cele: " << endl;
+    cout << "Twoje cele: " << endl;
 
-        for (const auto &cel : celeOszczednosciowe)
-        {
-            cout << "Numer: " << cel.numerCelu << ", Cel: " << cel.nazwa << ", Kwota docelowa: " << cel.kwotaDocelowa << ", Aktualna kwota: " << cel.aktualnaKwota << endl;
-        }
+    for (const auto &cel : celeOszczednosciowe)
+    {
+        cout << "Numer: " << cel.numerCelu << ", Cel: " << cel.nazwa << ", Kwota docelowa: " << cel.kwotaDocelowa
+             << ", Aktualna kwota: " << cel.aktualnaKwota << ", Status: " << (cel.zrealizowany ? "Zrealizowany" : "Niezrealizowany") << endl;
     }
 }
 
@@ -81,10 +75,10 @@ void usunCel()
 
 void aktualizujCel()
 {
-
     if (celeOszczednosciowe.empty())
     {
-        cout << "Brak celów do aktualizacji." << endl;
+        cout << endl
+             << "Brak celów do aktualizacji." << endl;
         return;
     }
 
@@ -93,21 +87,29 @@ void aktualizujCel()
 
     wyswietlCele();
 
-    cout << "Który cel chcesz zaktualizować?: " << endl;
+    cout << "Podaj numer celu do aktualizacji: " << endl;
     cin >> numerCelu;
 
-    if (numerCelu >= 1 <= celeOszczednosciowe.size())
+    if (numerCelu >= 1 && numerCelu <= celeOszczednosciowe.size())
     {
-
-        cout << "Podaj nową kwotę: ";
+        cout << "Podaj nową kwotę dla celu " << numerCelu << ": ";
         cin >> nowaKwota;
 
         celeOszczednosciowe[numerCelu - 1].aktualnaKwota = nowaKwota;
+
+        if (celeOszczednosciowe[numerCelu - 1].aktualnaKwota >= celeOszczednosciowe[numerCelu - 1].kwotaDocelowa)
+        {
+            celeOszczednosciowe[numerCelu - 1].zrealizowany = true;
+            cout << "Gratulacje! Cel został osiągnięty!" << endl;
+        }
+        else
+        {
+            cout << "Aktualizacja zakończona pomyślnie!" << endl;
+        }
     }
     else
     {
         cout << "Nieprawidłowy numer celu." << endl;
-        return;
     }
 }
 
@@ -118,10 +120,10 @@ int main()
     do
     {
         cout << "Menu: " << endl;
-        cout << "1. Dodaj cel oszczędnościowy." << endl;
-        cout << "2. Wyświetl listę celów oszczędnościowych." << endl;
-        cout << "3. Usuń cel oszczędnościowy." << endl;
-        cout << "4. Zaktualizuj cel." << endl;
+        cout << "1. Dodaj cel oszczędnościowy" << endl;
+        cout << "2. Wyświetl listę celów oszczędnościowych" << endl;
+        cout << "3. Usuń cel oszczędnościowy" << endl;
+        cout << "4. Aktualizuj cel oszczędnościowy" << endl;
         cout << "0. Wyjście" << endl;
 
         cout << "Wybierz opcję:" << endl;
