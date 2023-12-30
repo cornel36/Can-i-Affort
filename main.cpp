@@ -1,5 +1,7 @@
 #include <iostream>
 #include <vector>
+#include <Windows.h>
+#include <ctime>
 
 using namespace std;
 
@@ -113,9 +115,36 @@ void aktualizujCel()
     }
 }
 
+bool ZgodaPowiadomienie()
+{
+    char odpowiedz;
+
+    cout << "Czy zgadzasz sie na codzienne powiadomienia? (T/N): ";
+    cin >> odpowiedz;
+
+    return (odpowiedz == 'T' || odpowiedz == 't');
+}
+
+void zmienZgodePowiadomienia(bool &zgodaNaPowiadomienia)
+{
+    char odpowiedz;
+
+    cout << "Czy chcesz zmienić preferencje powiadomień? (T/N): ";
+    cin >> odpowiedz;
+
+    zgodaNaPowiadomienia = (odpowiedz == 'T' || odpowiedz == 't');
+}
+
+void wyslijPowiadomienie(const wchar_t *tytul, const wchar_t *tresc)
+{
+    MessageBox(NULL, tresc, tytul, MB_ICONINFORMATION | MB_OK);
+}
+
 int main()
 {
     int wybor;
+
+    bool zgodaNaPowiadomienia = ZgodaPowiadomienie();
 
     do
     {
@@ -124,6 +153,7 @@ int main()
         cout << "2. Wyświetl listę celów oszczędnościowych" << endl;
         cout << "3. Usuń cel oszczędnościowy" << endl;
         cout << "4. Aktualizuj cel oszczędnościowy" << endl;
+        cout << "5. Zmień decyzję dotyczącą powiadomień" << endl;
         cout << "0. Wyjście" << endl;
 
         cout << "Wybierz opcję:" << endl;
@@ -143,11 +173,22 @@ int main()
         case 4:
             aktualizujCel();
             break;
+        case 5:
+            zmienZgodePowiadomienia(zgodaNaPowiadomienia);
+            break;
         case 0:
             cout << "Do zobaczenia!" << endl;
             break;
         default:
             cout << "Nieprawidłowy wybór." << endl;
+        }
+
+        if (zgodaNaPowiadomienia)
+        {
+
+            time_t teraz = time(0);
+            struct tm ltm;
+            localtime_s(&ltm, &teraz);
         }
 
     } while (wybor != 0);
