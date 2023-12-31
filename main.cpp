@@ -6,7 +6,7 @@
 
 using namespace std;
 
-const string FileName = "Goals.txt";
+const string FILE_NAME = "Goals.txt";
 
 class SavingsGoal
 {
@@ -22,8 +22,8 @@ public:
 
 vector<SavingsGoal> savingGoals;
 
-void SaveFile() {
-    ofstream File(FileName);
+void SAVE_FILE() {
+    ofstream File(FILE_NAME);
 
     if (File.is_open()) {
         for (const auto &goal : savingGoals) {
@@ -36,11 +36,11 @@ void SaveFile() {
     }
 }
 
-void LoadFile() {
+void LOAD_FILE() {
 
     savingGoals.clear();
 
-    ifstream File(FileName);
+    ifstream File(FILE_NAME);
 
     if (File.is_open()) {
         int GoalNumber;
@@ -58,7 +58,7 @@ void LoadFile() {
         cout << "Goals loaded from the file!" << endl;
     } else {
         cout << "Can't access the last save file. Creating a new file." << endl;
-        ofstream newFile(FileName);
+        ofstream newFile(FILE_NAME);
         newFile.close();
     }
 }
@@ -168,7 +168,7 @@ void SendNotification(const SavingsGoal &goal) {
 }
 
 int main() {
-    LoadFile();
+    LOAD_FILE();
 
     bool consentToNotifications = ConsentNotification();
     
@@ -204,7 +204,7 @@ int main() {
             break;
         case 0:
             cout << "Saving goals before exiting." << endl;
-            SaveFile();
+            SAVE_FILE();
             cout << "Goodbye!" << endl;
             break;
         default:
