@@ -6,241 +6,215 @@
 
 using namespace std;
 
-const string NazwaPliku = "Goals.txt";
+const string FileName = "Goals.txt";
 
-class CelOszczednosciowy
+class SavingsGoal
 {
 public:
-    int numerCelu;
-    string nazwa;
-    double kwotaDocelowa;
-    double aktualnaKwota;
-    bool zrealizowany;
+    int GoalNumber;
+    string name;
+    double TargetAmount;
+    double CurrentAmount;
+    bool completed;
 
-    CelOszczednosciowy(int numer, const string &n, double kwota) : numerCelu(numer), nazwa(n), kwotaDocelowa(kwota), aktualnaKwota(0.0), zrealizowany(false) {}
+    SavingsGoal(int number, const string &n, double amount) : GoalNumber(number), name(n), TargetAmount(amount), CurrentAmount(0.0), completed(false) {}
 };
 
-vector<CelOszczednosciowy> celeOszczednosciowe;
+vector<SavingsGoal> savingGoals;
 
-void zapiszdoPliku(){
-    ofstream plik(NazwaPliku);
+void SaveFile() {
+    ofstream File(FileName);
 
-
-    if(plik.is_open()){
-        for(const auto &cel : celeOszczednosciowe){
-            plik << cel.numerCelu << " " << cel.nazwa << " " << cel.kwotaDocelowa << " " << cel.aktualnaKwota << " " << cel.zrealizowany << endl; 
+    if (File.is_open()) {
+        for (const auto &goal : savingGoals) {
+            File << goal.GoalNumber << " " << goal.name << " " << goal.TargetAmount << " " << goal.CurrentAmount << " " << goal.completed << endl;
         }
-    plik.close();
-    cout << "Cele zapisane!" << endl;
+        File.close();
+        cout << "Goals saved!" << endl;
+    } else {
+        cout << "Can't access the last save file." << endl;
     }
-    else
-    {
-        cout << "Nie można otworzyć pliku zapisu." << endl;
-    } 
 }
 
-void wczytajPlik(){
+void LoadFile() {
 
-    celeOszczednosciowe.clear();
+    savingGoals.clear();
 
-    ifstream plik(NazwaPliku);
+    ifstream File(FileName);
 
-    if(plik.is_open()){
-        int numerCelu;
-        string nazwa;
-        double kwotaDocelowa;
-        double aktualnaKwota;
-        bool zrealizowany;
+    if (File.is_open()) {
+        int GoalNumber;
+        string name;
+        double TargetAmount;
+        double CurrentAmount;
+        bool completed;
 
-        while(plik >> numerCelu >> nazwa >> kwotaDocelowa >> aktualnaKwota >> zrealizowany){
-            celeOszczednosciowe.push_back(CelOszczednosciowy(numerCelu,nazwa,kwotaDocelowa));
-            celeOszczednosciowe.back().aktualnaKwota = aktualnaKwota;
-            celeOszczednosciowe.back(). zrealizowany = zrealizowany;
+        while (File >> GoalNumber >> name >> TargetAmount >> CurrentAmount >> completed) {
+            savingGoals.push_back(SavingsGoal(GoalNumber, name, TargetAmount));
+            savingGoals.back().CurrentAmount = CurrentAmount;
+            savingGoals.back().completed = completed;
         }
-        plik.close();
-        cout << "Cele wczytane z zapisu!" << endl;
-    }
-    else
-    {
-        cout << "Nie można wczytać ostatniego zapisu. Tworzenie nowego pliku." << endl;
-        ofstream nowyPLIK(NazwaPliku);
-        nowyPLIK.close();
+        File.close();
+        cout << "Goals loaded from the file!" << endl;
+    } else {
+        cout << "Can't access the last save file. Creating a new file." << endl;
+        ofstream newFile(FileName);
+        newFile.close();
     }
 }
 
+void AddGoal() {
+    string name;
+    double TargetAmount;
 
-void dodajCel()
-{
-    string nazwa;
-    double kwotaDocelowa;
+    cout << "Goal name: " << endl;
+    cin >> name;
 
-    cout << "Podaj nazwę celu: " << endl;
-    cin >> nazwa;
+    cout << "Target amount: " << endl;
+    cin >> TargetAmount;
 
-    cout << "Podaj kwotę docelową: " << endl;
-    cin >> kwotaDocelowa;
+    int GoalNumber = savingGoals.size() + 1;
 
-    int numerCelu = celeOszczednosciowe.size() + 1;
+    savingGoals.push_back(SavingsGoal(GoalNumber, name, TargetAmount));
 
-    celeOszczednosciowe.push_back(CelOszczednosciowy(numerCelu, nazwa, kwotaDocelowa));
-
-    cout << "Dodano nowy cel!" << endl;
+    cout << "Added a new goal!" << endl;
 }
 
-void wyswietlCele()
-{
-    cout << "Twoje cele: " << endl;
+void DisplayGoals() {
+    cout << "Your goals: " << endl;
 
-    for (const auto &cel : celeOszczednosciowe)
-    {
-        cout << "Numer: " << cel.numerCelu << ", Cel: " << cel.nazwa << ", Kwota docelowa: " << cel.kwotaDocelowa
-             << ", Aktualna kwota: " << cel.aktualnaKwota << ", Status: " << (cel.zrealizowany ? "Zrealizowany" : "Niezrealizowany") << endl;
+    for (const auto &goal : savingGoals) {
+        cout << "Number: " << goal.GoalNumber << ", Goal: " << goal.name << ", Target amount: " << goal.TargetAmount
+             << ", Current amount: " << goal.CurrentAmount << ", Status: " << (goal.completed ? "completed" : "Not completed") << endl;
     }
 }
 
-void usunCel()
-{
-    if (celeOszczednosciowe.empty())
-    {
+void RemoveGoal() {
+    if (savingGoals.empty()) {
         cout << endl
-             << "Brak celów." << endl;
+             << "No goals to remove." << endl;
         return;
     }
 
-    int numerCelu;
+    int GoalNumber;
 
-    wyswietlCele();
+    DisplayGoals();
 
-    cout << "Podaj numer celu do usunięcia: " << endl;
-    cin >> numerCelu;
+    cout << "Enter the goal number to remove: " << endl;
+    cin >> GoalNumber;
 
-    if (numerCelu >= 1 && numerCelu <= celeOszczednosciowe.size())
-    {
-        celeOszczednosciowe.erase(celeOszczednosciowe.begin() + numerCelu - 1);
-        cout << "Cel został usunięty!" << endl;
-    }
-    else
-    {
-        cout << "Nieprawidłowy numer celu." << endl;
+    if (GoalNumber >= 1 && GoalNumber <= savingGoals.size()) {
+        savingGoals.erase(savingGoals.begin() + GoalNumber - 1);
+        cout << "Goal removed!" << endl;
+    } else {
+        cout << "Invalid goal number." << endl;
     }
 }
 
-void aktualizujCel()
-{
-    if (celeOszczednosciowe.empty())
-    {
+void UpdateGoal() {
+    if (savingGoals.empty()) {
         cout << endl
-             << "Brak celów do aktualizacji." << endl;
+             << "No goals to update." << endl;
         return;
     }
 
-    int numerCelu;
-    double nowaKwota;
+    int GoalNumber;
+    double newAmount;
 
-    wyswietlCele();
+    DisplayGoals();
 
-    cout << "Podaj numer celu do aktualizacji: " << endl;
-    cin >> numerCelu;
+    cout << "Enter the goal number to update: " << endl;
+    cin >> GoalNumber;
 
-    if (numerCelu >= 1 && numerCelu <= celeOszczednosciowe.size())
-    {
-        cout << "Podaj nową kwotę dla celu " << numerCelu << ": ";
-        cin >> nowaKwota;
+    if (GoalNumber >= 1 && GoalNumber <= savingGoals.size()) {
+        cout << "Enter a new amount for goal " << GoalNumber << ": ";
+        cin >> newAmount;
 
-        celeOszczednosciowe[numerCelu - 1].aktualnaKwota = nowaKwota;
+        savingGoals[GoalNumber - 1].CurrentAmount = newAmount;
 
-        if (celeOszczednosciowe[numerCelu - 1].aktualnaKwota >= celeOszczednosciowe[numerCelu - 1].kwotaDocelowa)
-        {
-            celeOszczednosciowe[numerCelu - 1].zrealizowany = true;
-            cout << "Gratulacje! Cel został osiągnięty!" << endl;
+        if (savingGoals[GoalNumber - 1].CurrentAmount >= savingGoals[GoalNumber - 1].TargetAmount) {
+            savingGoals[GoalNumber - 1].completed = true;
+            cout << "Congratulations! The goal has been achieved!" << endl;
+        } else {
+            cout << "Update successful!" << endl;
         }
-        else
-        {
-            cout << "Aktualizacja zakończona pomyślnie!" << endl;
-        }
-    }
-    else
-    {
-        cout << "Nieprawidłowy numer celu." << endl;
+    } else {
+        cout << "Invalid goal number." << endl;
     }
 }
 
-bool ZgodaPowiadomienie()
-{
-    char odpowiedz;
+bool ConsentNotification() {
+    char response;
 
-    cout << "Czy zgadzasz sie na codzienne powiadomienia? (T/N): ";
-    cin >> odpowiedz;
+    cout << "Do you consent to daily notifications? (Y/N): ";
+    cin >> response;
 
-    return (odpowiedz == 'T' || odpowiedz == 't');
+    return (response == 'Y' || response == 'y');
 }
 
-void zmienZgodePowiadomienia(bool &zgoda)
-{
-    zgoda = !zgoda;
-    cout << "Zgoda na powiadomienia została " << (zgoda ? "udzielona." : "wycofana.") << endl;
+void ChangeNotificationConsent(bool &consent) {
+    consent = !consent;
+    cout << "Consent for notifications has been " << (consent ? "granted." : "withdrawn.") << endl;
 }
 
-void wyslijPowiadomienie(const CelOszczednosciowy &cel) {
-    wstring tresc = L"Przypomnienie o celu: " + wstring(cel.nazwa.begin(), cel.nazwa.end()) +
-                    L"Kwota docelowa: " + to_wstring(cel.kwotaDocelowa) +
-                    L"\nAktualna kwota: " + to_wstring(cel.aktualnaKwota);
+void SendNotification(const SavingsGoal &goal) {
+    LPCWSTR title = L"Reminder about the goal";
 
-    MessageBox(NULL, tresc.c_str(), L"Przypomnienie o celu", MB_ICONINFORMATION | MB_OK);
+    wstring content = L"Reminder about the goal: " + wstring(goal.name.begin(), goal.name.end()) +
+                    L"Target amount: " + to_wstring(goal.TargetAmount) +
+                    L"\nCurrent amount: " + to_wstring(goal.CurrentAmount);
+
+    MessageBoxW(NULL, content.c_str(), title, MB_ICONINFORMATION | MB_OK);
 }
 
-int main()
-{
-    wczytajPlik();
+int main() {
+    LoadFile();
 
-    bool zgodaNaPowiadomienia = ZgodaPowiadomienie();
+    bool consentToNotifications = ConsentNotification();
     
-    int wybor;
+    int choice;
 
-
-    do
-    {
+    do {
         cout << "Menu: " << endl;
-        cout << "1. Dodaj cel oszczędnościowy" << endl;
-        cout << "2. Wyświetl listę celów oszczędnościowych" << endl;
-        cout << "3. Usuń cel oszczędnościowy" << endl;
-        cout << "4. Aktualizuj cel oszczędnościowy" << endl;
-        cout << "5. Zmień zgodę dotyczącą powiadomień" << endl;
-        cout << "0. Wyjście" << endl;
+        cout << "1. Add savings goal" << endl;
+        cout << "2. Display a list of savings goals" << endl;
+        cout << "3. Remove savings goal" << endl;
+        cout << "4. Update savings goal" << endl;
+        cout << "5. Change notification consent" << endl;
+        cout << "0. Exit" << endl;
 
-        cout << "Wybierz opcję:" << endl;
-        cin >> wybor;
+        cout << "Choose an option:" << endl;
+        cin >> choice;
 
-        switch (wybor)
-        {
+        switch (choice) {
         case 1:
-            dodajCel();
+            AddGoal();
             break;
         case 2:
-            wyswietlCele();
+            DisplayGoals();
             break;
         case 3:
-            usunCel();
+            RemoveGoal();
             break;
         case 4:
-            aktualizujCel();
+            UpdateGoal();
             break;
         case 5:
-            zmienZgodePowiadomienia(zgodaNaPowiadomienia);
+            ChangeNotificationConsent(consentToNotifications);
             break;
         case 0:
-            cout << "Zapisywanie celów przed wyjściem." << endl;
-            zapiszdoPliku();
-            cout << "Do zobaczenia!" << endl;
+            cout << "Saving goals before exiting." << endl;
+            SaveFile();
+            cout << "Goodbye!" << endl;
             break;
         default:
-            cout << "Nieprawidłowy wybór." << endl;
+            cout << "Invalid choice." << endl;
         }
-        if(zgodaNaPowiadomienia){
-            wyslijPowiadomienie();
+        if (consentToNotifications) {
+            SendNotification(savingGoals.back());
         }
 
-    } while (wybor != 0);
+    } while (choice != 0);
 
     return 0;
 }
