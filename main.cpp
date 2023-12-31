@@ -2,8 +2,11 @@
 #include <vector>
 #include <Windows.h>
 #include <ctime>
+#include <fstream>
 
 using namespace std;
+
+const string NazwaPliku = "Goals.txt";
 
 class CelOszczednosciowy
 {
@@ -18,6 +21,53 @@ public:
 };
 
 vector<CelOszczednosciowy> celeOszczednosciowe;
+
+void zapiszdoPliku(){
+    ofstream plik(NazwaPliku);
+
+
+    if(plik.is_open()){
+        for(const auto &cel : celeOszczednosciowe){
+            plik << cel.numerCelu << " " << cel.nazwa << " " << cel.kwotaDocelowa << " " << cel.aktualnaKwota << " " << cel.zrealizowany << endl; 
+        }
+    plik.close();
+    cout << "Cele zapisane!" << endl;
+    }
+    else
+    {
+        cout << "Nie można otworzyć pliku zapisu." << endl;
+    } 
+}
+
+void wczytajPlik(){
+
+    celeOszczednosciowe.clear();
+
+    ifstream plik(NazwaPliku);
+
+    if(plik.is_open()){
+        int numerCelu;
+        string nazwa;
+        double kwotaDocelowa;
+        double aktualnaKwota;
+        bool zrealizowany;
+
+        while(plik >> numerCelu >> nazwa >> kwotaDocelowa >> aktualnaKwota >> zrealizowany){
+            celeOszczednosciowe.push_back(CelOszczednosciowy(numerCelu,nazwa,kwotaDocelowa));
+            celeOszczednosciowe.back().aktualnaKwota = aktualnaKwota;
+            celeOszczednosciowe.back(). zrealizowany = zrealizowany;
+        }
+        plik.close();
+        cout << "Cele wczytane z zapisu!" << endl;
+    }
+    else
+    {
+        cout << "Nie można wczytać ostatniego zapisu. Tworzenie nowego pliku." << endl;
+        ofstream nowyPLIK(NazwaPliku);
+        nowyPLIK.close();
+    }
+}
+
 
 void dodajCel()
 {
@@ -125,26 +175,28 @@ bool ZgodaPowiadomienie()
     return (odpowiedz == 'T' || odpowiedz == 't');
 }
 
-void zmienZgodePowiadomienia(bool &zgodaNaPowiadomienia)
+void zmienZgodePowiadomienia(bool &zgoda)
 {
-    char odpowiedz;
-
-    cout << "Czy chcesz zmienić preferencje powiadomień? (T/N): ";
-    cin >> odpowiedz;
-
-    zgodaNaPowiadomienia = (odpowiedz == 'T' || odpowiedz == 't');
+    zgoda = !zgoda;
+    cout << "Zgoda na powiadomienia została " << (zgoda ? "udzielona." : "wycofana.") << endl;
 }
 
-void wyslijPowiadomienie(const wchar_t *tytul, const wchar_t *tresc)
-{
-    MessageBox(NULL, tresc, tytul, MB_ICONINFORMATION | MB_OK);
+void wyslijPowiadomienie(const CelOszczednosciowy &cel) {
+    wstring tresc = L"Przypomnienie o celu: " + wstring(cel.nazwa.begin(), cel.nazwa.end()) +
+                    L"Kwota docelowa: " + to_wstring(cel.kwotaDocelowa) +
+                    L"\nAktualna kwota: " + to_wstring(cel.aktualnaKwota);
+
+    MessageBox(NULL, tresc.c_str(), L"Przypomnienie o celu", MB_ICONINFORMATION | MB_OK);
 }
 
 int main()
 {
-    int wybor;
+    wczytajPlik();
 
     bool zgodaNaPowiadomienia = ZgodaPowiadomienie();
+    
+    int wybor;
+
 
     do
     {
@@ -153,7 +205,7 @@ int main()
         cout << "2. Wyświetl listę celów oszczędnościowych" << endl;
         cout << "3. Usuń cel oszczędnościowy" << endl;
         cout << "4. Aktualizuj cel oszczędnościowy" << endl;
-        cout << "5. Zmień decyzję dotyczącą powiadomień" << endl;
+        cout << "5. Zmień zgodę dotyczącą powiadomień" << endl;
         cout << "0. Wyjście" << endl;
 
         cout << "Wybierz opcję:" << endl;
@@ -177,18 +229,15 @@ int main()
             zmienZgodePowiadomienia(zgodaNaPowiadomienia);
             break;
         case 0:
+            cout << "Zapisywanie celów przed wyjściem." << endl;
+            zapiszdoPliku();
             cout << "Do zobaczenia!" << endl;
             break;
         default:
             cout << "Nieprawidłowy wybór." << endl;
         }
-
-        if (zgodaNaPowiadomienia)
-        {
-
-            time_t teraz = time(0);
-            struct tm ltm;
-            localtime_s(&ltm, &teraz);
+        if(zgodaNaPowiadomienia){
+            wyslijPowiadomienie();
         }
 
     } while (wybor != 0);
